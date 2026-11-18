@@ -255,6 +255,89 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 13px
   .lane-label { padding-left: 8px; }
   .lane-label > span:first-child { font-size: 11px; }
 }
+
+.control-guide {
+  width: min(900px, calc(100% - 24px));
+  max-height: 88vh;
+  padding: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+.control-guide::backdrop { background: #07080bd1; }
+.guide-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.guide-header h2 { font-size: 18px; }
+.guide-body { display: grid; gap: 12px; padding: 14px; }
+.guide-card {
+  --guide-color: #90c8ef;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--guide-color);
+  border-radius: 8px;
+  background: var(--well);
+}
+.guide-timing { --guide-color: #a9dbad; }
+.guide-edit { --guide-color: var(--live); }
+.guide-export { --guide-color: #dfb6f0; }
+.guide-card h3 { margin: 0 0 10px; color: var(--guide-color); font-size: 15px; }
+.guide-picture {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.guide-picture .keycap { cursor: default; }
+.guide-chip {
+  padding: 6px 8px;
+  border: 1px solid var(--guide-color);
+  border-radius: 5px;
+  color: var(--guide-color);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.guide-arrow { color: var(--guide-color); }
+.guide-card dl { display: grid; grid-template-columns: minmax(135px, 28%) 1fr; gap: 6px 12px; margin: 12px 0 0; font-size: 13px; }
+.guide-card dt { font-weight: 650; }
+.guide-card dd { margin: 0; color: var(--muted); }
+.guide-grid-picture { display: grid; grid-template-columns: 48px 1fr; }
+.guide-track {
+  min-height: 25px;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(8, 1fr);
+  background: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%);
+}
+.guide-track i { width: 9px; height: 14px; background: var(--live); border-radius: 2px; }
+.guide-track i:nth-child(2) { grid-column: 3; height: 10px; }
+.guide-track i:nth-child(3) { grid-column: 5; height: 19px; }
+.guide-track i:nth-child(4) { grid-column: 7; }
+.guide-track .guide-review { background: #8b8f98; }
+.guide-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 10px; color: var(--muted); font-size: 11px; }
+.guide-legend span:first-child { color: var(--live); }
+
+@media (max-width: 540px) {
+  .guide-header { padding-inline: 12px; }
+  .guide-body, .guide-card { padding: 10px; }
+  .guide-card dl { grid-template-columns: 1fr; gap: 2px; }
+  .guide-card dd { margin-bottom: 7px; }
+}
 </style>
 </head>
 <body>
@@ -265,6 +348,7 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 13px
         <div><h1>DRUMAGON</h1><p>EPSILON SOUNDS</p></div>
       </div>
       <div class="header-actions">
+        <button class="keycap" id="guideButton" type="button" aria-haspopup="dialog" aria-controls="controlGuide">Control guide</button>
         <button class="keycap" id="demoButton" type="button">Load demo</button>
         <button class="keycap" id="loadButton" type="button"><span aria-hidden="true">＋</span> Open audio</button>
         <div class="export-wrap">
@@ -380,6 +464,80 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 13px
   </main>
   <div class="drop-overlay" id="dropOverlay" hidden><strong>Drop audio to analyze</strong><span>WAV or MP3</span></div>
   <div class="toast" id="toast" role="status" hidden></div>
+  <dialog id="controlGuide" class="control-guide" aria-labelledby="guideTitle">
+  <header class="guide-header">
+    <h2 id="guideTitle">Drumagon control guide</h2>
+    <form method="dialog"><button class="keycap" autofocus>Close</button></form>
+  </header>
+  <div class="guide-body">
+    <section class="guide-card guide-source">
+      <h3>Open and compare audio</h3>
+      <div class="guide-picture" aria-hidden="true">
+        <span class="keycap">＋ Open audio</span><span class="keycap subdued">Add drum stem</span>
+        <span class="guide-arrow">→</span><span class="guide-chip">Original · Stem · Rebuilt</span>
+      </div>
+      <dl>
+        <dt>Load demo</dt><dd>Opens the built-in 140 BPM drill example and its matching drum stem.</dd>
+        <dt>Open audio</dt><dd>Loads a mix or loop for analysis. You can also drop an audio file onto the app.</dd>
+        <dt>Add drum stem / Replace stem</dt><dd>Loads an isolated drum track. Export it from the same starting point as the mix so the hits line up.</dd>
+        <dt>Original / Stem / Rebuilt</dt><dd>Hear the loaded mix, your supplied drum stem, or the current drum pattern played by Drumagon’s kit.</dd>
+        <dt>Detection</dt><dd>Full mix scans the original audio. Drum stem scans your isolated drums. Combined uses hits from both. This decides which hits appear in the grid.</dd>
+      </dl>
+    </section>
+
+    <section class="guide-card guide-timing">
+      <h3>Playback and tempo</h3>
+      <div class="guide-picture" aria-hidden="true">
+        <span class="keycap">▶ Play</span><span class="guide-chip">Loop</span>
+        <span class="guide-chip">BPM 140</span><span class="keycap">÷2</span><span class="keycap">×2</span>
+        <span class="guide-chip">BAR 1 &nbsp; 0.120 s</span>
+      </div>
+      <dl>
+        <dt>Play / Pause</dt><dd>Plays or pauses the visible bar range. Space also toggles playback when you’re outside a control.</dd>
+        <dt>Loop</dt><dd>Repeats the selected bars until you pause or turn Loop off.</dd>
+        <dt>Waveform and time display</dt><dd>Click the waveform or use its slider to move the playhead. The clock shows the current time in the audio.</dd>
+        <dt>BPM / ÷2 / ×2</dt><dd>Sets the grid tempo. Use ÷2 or ×2 if a 140 BPM beat is read as 280 or 70. These controls change the grid spacing and export tempo.</dd>
+        <dt>Bar 1 / Set at playhead</dt><dd>Enter the first downbeat in seconds, or seek to it in the waveform and press Set at playhead to line up the bars.</dd>
+      </dl>
+    </section>
+
+    <section class="guide-card guide-edit">
+      <h3>Read and edit hits</h3>
+      <div class="guide-picture guide-grid-picture" aria-hidden="true">
+        <span>Kick</span><div class="guide-track"><i></i><i class="guide-review"></i><i></i></div>
+        <span>Hat</span><div class="guide-track"><i></i><i></i><i class="guide-review"></i><i></i></div>
+      </div>
+      <p class="guide-legend"><span>Gold · detected or edited</span><span>Gray · review suggested</span></p>
+      <div class="guide-picture" aria-hidden="true">
+        <span class="guide-chip">TIME (MS) &nbsp; 864.0</span><span class="guide-chip">VELOCITY &nbsp; 92</span>
+        <span class="guide-chip">From nearest step &nbsp; +6.9 ms</span>
+      </div>
+      <dl>
+        <dt>‹ / Bars in view / ›</dt><dd>Go back or forward by the selected range. Choose 1, 2, 4, or 8 bars.</dd>
+        <dt>Grid and lane names</dt><dd>Select a hit to inspect it. Click an empty spot to seek, or double-click it to add a hit. Tap the lane name to mute or unmute it in Rebuilt playback.</dd>
+        <dt>Instrument</dt><dd>Move the selected hit to Kick, Snare / Clap, Closed Hat, or Open Hat. It also sets the lane for Add hit at playhead.</dd>
+        <dt>Time (ms) / From nearest step</dt><dd>Time moves the selected hit within the file. The offset tells you how early (−) or late (+) it lands relative to the nearest sixteenth-note grid line.</dd>
+        <dt>Velocity</dt><dd>Sets how hard the rebuilt kit plays the hit and its MIDI velocity, from 1 to 127. Taller grid marks have higher velocity.</dd>
+        <dt>Add hit at playhead / Delete / Undo edit</dt><dd>Insert a hit at the cursor, remove the selected hit, or reverse the most recent edit for the current detection input.</dd>
+        <dt>Bar changes</dt><dd>Shows how many drum steps each bar adds or removes compared with the first bar in view.</dd>
+      </dl>
+    </section>
+
+    <section class="guide-card guide-export">
+      <h3>Export to FL Studio</h3>
+      <div class="guide-picture" aria-hidden="true">
+        <span class="keycap keycap-primary">Export MIDI ↓</span><span class="guide-arrow">→</span>
+        <span class="guide-chip">Selected bars / Whole track</span><span class="guide-arrow">→</span><span class="guide-chip">FL Studio Piano Roll</span>
+      </div>
+      <dl>
+        <dt>Selected bars</dt><dd>Exports hits in the visible bar range, starting at the first selected bar.</dd>
+        <dt>Whole track</dt><dd>Exports every hit in the current grid from the start of the audio, including pickups before bar 1.</dd>
+        <dt>Map snare/clap to GM clap</dt><dd>Sends that lane to MIDI note 39 (clap) instead of 38 (snare). Use this when your drum kit expects the clap mapping.</dd>
+      </dl>
+    </section>
+  </div>
+</dialog>
+
   <script>function createDetector() {
   const lanes = [
     { id: "kick", label: "Kick", note: 36 },
@@ -1633,6 +1791,7 @@ function createMidiTools() {
   ui.exportWhole.onclick = () => exportMidi(true);
   document.addEventListener("click", (event) => { if (!event.target.closest(".export-wrap")) menu(false); });
   document.addEventListener("keydown", (event) => {
+    if (event.target.closest("#controlGuide")) return;
     if (event.key === "Escape") { menu(false); return; }
     if (event.code === "Space" && !event.target.closest("button,input,select") && state.track) {
       event.preventDefault();
@@ -1658,6 +1817,11 @@ function createMidiTools() {
   else window.addEventListener("resize", drawWave);
   loadDemo();
 })();
+
+const controlGuide = document.getElementById("controlGuide");
+const guideButton = document.getElementById("guideButton");
+guideButton.addEventListener("click", () => controlGuide.showModal());
+controlGuide.addEventListener("close", () => guideButton.focus());
 </script>
 </body>
 </html>

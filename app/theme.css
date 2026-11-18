@@ -247,3 +247,86 @@ footer { display: flex; justify-content: space-between; gap: 12px; padding: 13px
   .lane-label { padding-left: 8px; }
   .lane-label > span:first-child { font-size: 11px; }
 }
+
+.control-guide {
+  width: min(900px, calc(100% - 24px));
+  max-height: 88vh;
+  padding: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+.control-guide::backdrop { background: #07080bd1; }
+.guide-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.guide-header h2 { font-size: 18px; }
+.guide-body { display: grid; gap: 12px; padding: 14px; }
+.guide-card {
+  --guide-color: #90c8ef;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--guide-color);
+  border-radius: 8px;
+  background: var(--well);
+}
+.guide-timing { --guide-color: #a9dbad; }
+.guide-edit { --guide-color: var(--live); }
+.guide-export { --guide-color: #dfb6f0; }
+.guide-card h3 { margin: 0 0 10px; color: var(--guide-color); font-size: 15px; }
+.guide-picture {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.guide-picture .keycap { cursor: default; }
+.guide-chip {
+  padding: 6px 8px;
+  border: 1px solid var(--guide-color);
+  border-radius: 5px;
+  color: var(--guide-color);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.guide-arrow { color: var(--guide-color); }
+.guide-card dl { display: grid; grid-template-columns: minmax(135px, 28%) 1fr; gap: 6px 12px; margin: 12px 0 0; font-size: 13px; }
+.guide-card dt { font-weight: 650; }
+.guide-card dd { margin: 0; color: var(--muted); }
+.guide-grid-picture { display: grid; grid-template-columns: 48px 1fr; }
+.guide-track {
+  min-height: 25px;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(8, 1fr);
+  background: repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%);
+}
+.guide-track i { width: 9px; height: 14px; background: var(--live); border-radius: 2px; }
+.guide-track i:nth-child(2) { grid-column: 3; height: 10px; }
+.guide-track i:nth-child(3) { grid-column: 5; height: 19px; }
+.guide-track i:nth-child(4) { grid-column: 7; }
+.guide-track .guide-review { background: #8b8f98; }
+.guide-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 10px; color: var(--muted); font-size: 11px; }
+.guide-legend span:first-child { color: var(--live); }
+
+@media (max-width: 540px) {
+  .guide-header { padding-inline: 12px; }
+  .guide-body, .guide-card { padding: 10px; }
+  .guide-card dl { grid-template-columns: 1fr; gap: 2px; }
+  .guide-card dd { margin-bottom: 7px; }
+}

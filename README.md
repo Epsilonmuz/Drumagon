@@ -10,6 +10,8 @@ Drumagon is an offline Epsilon Sounds drum transcription prototype. It finds dru
 4. If you have a separately rendered drum stem, choose **Add drum stem**. Both files should start at the same point. Try **Full mix**, **Drum stem**, and **Combined** under Detection to see how the results differ. Edits are kept with the active detection input for the current session.
 5. Select a hit to edit its instrument, time, or velocity. Double-click an empty place on a lane to insert a hit. Use the bar arrows and **Loop** to listen to a section. Clicking the waveform seeks through the track.
 
+Open **Control guide** in the toolbar for color diagrams and explanations of the controls.
+
 ## Take the pattern to FL Studio
 
 Choose **Export MIDI**, then **Selected bars** or **Whole track**. A selected export starts at the selected bar. A full export starts at audio time zero and includes any hits that precede bar 1. The export preserves detector offsets and user edits along with the current tempo and 4/4 metadata. If you want a pickup before the selected bar, include an earlier bar or export the whole track.

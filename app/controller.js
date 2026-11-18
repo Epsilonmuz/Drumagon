@@ -700,6 +700,7 @@
   ui.exportWhole.onclick = () => exportMidi(true);
   document.addEventListener("click", (event) => { if (!event.target.closest(".export-wrap")) menu(false); });
   document.addEventListener("keydown", (event) => {
+    if (event.target.closest("#controlGuide")) return;
     if (event.key === "Escape") { menu(false); return; }
     if (event.code === "Space" && !event.target.closest("button,input,select") && state.track) {
       event.preventDefault();
@@ -725,3 +726,8 @@
   else window.addEventListener("resize", drawWave);
   loadDemo();
 })();
+
+const controlGuide = document.getElementById("controlGuide");
+const guideButton = document.getElementById("guideButton");
+guideButton.addEventListener("click", () => controlGuide.showModal());
+controlGuide.addEventListener("close", () => guideButton.focus());

@@ -10,8 +10,8 @@ async function dataURL(path, mime) {
   return "data:" + mime + ";base64," + file.toString("base64");
 }
 
-const [template, css, controller, regular, bold, hallmark] = await Promise.all([
-  text("app/template.html"), text("app/theme.css"), text("app/controller.js"),
+const [template, css, controller, guide, regular, bold, hallmark] = await Promise.all([
+  text("app/template.html"), text("app/theme.css"), text("app/controller.js"), text("app/guide.html"),
   dataURL("assets/EpsilonDial-Regular.ttf", "font/ttf"),
   dataURL("assets/EpsilonDial-Bold.ttf", "font/ttf"),
   dataURL("assets/epsilon-hallmark.png", "image/png"),
@@ -21,6 +21,7 @@ const script = [createDetector, createFixtureTools, createMidiTools]
   .map((factory) => factory.toString()).join("\n\n") + "\n\n" + controller;
 const page = template.replaceAll("%%HALLMARK%%", hallmark)
   .replace("%%STYLES%%", () => styles)
+  .replace("%%GUIDE%%", () => guide)
   .replace("%%SCRIPT%%", () => script.replace(/<\/script/gi, "<\\/script"));
 await writeFile(new URL("Drumagon.html", project), page);
 console.log("Built Drumagon.html");
