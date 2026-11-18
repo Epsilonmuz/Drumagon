@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Drumagon · Epsilon Sounds</title>
+  <link rel="icon" href="%%HALLMARK%%">
+  <style>%%STYLES%%</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-seal"><img src="%%HALLMARK%%" width="27" height="27" alt="Epsilon Sounds"></div>
+        <div><h1>DRUMAGON</h1><p>EPSILON SOUNDS</p></div>
+      </div>
+      <div class="header-actions">
+        <button class="keycap" id="demoButton" type="button">Load demo</button>
+        <button class="keycap" id="loadButton" type="button"><span aria-hidden="true">＋</span> Open audio</button>
+        <div class="export-wrap">
+          <button class="keycap keycap-primary" id="exportButton" type="button" aria-expanded="false" aria-controls="exportMenu">Export MIDI <span aria-hidden="true">↓</span></button>
+          <div class="export-menu" id="exportMenu" hidden>
+            <button type="button" id="exportSelection">Selected bars</button>
+            <button type="button" id="exportWhole">Whole track</button>
+            <label><input id="exportClap" type="checkbox"> Map snare/clap to GM clap</label>
+          </div>
+        </div>
+      </div>
+      <input type="file" accept="audio/*,.wav,.mp3,.aif,.aiff,.flac,.ogg,.m4a" id="audioFile" hidden>
+      <input type="file" accept="audio/*,.wav,.mp3,.aif,.aiff,.flac,.ogg,.m4a" id="stemFile" hidden>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel source-panel" aria-labelledby="trackName">
+      <div class="source-top">
+        <div class="file-heading">
+          <span class="caption">SOURCE AUDIO</span>
+          <h2 id="trackName">Drill Pocket Study</h2>
+          <p class="muted" id="trackMeta">Loading demo audio</p>
+        </div>
+        <div class="source-actions">
+          <button class="keycap subdued" id="loadStem" type="button" title="Open an isolated drum stem with the same start time as the source audio">Add drum stem</button>
+          <div class="segments" role="group" aria-label="Audition source">
+            <button type="button" data-audition="original" aria-pressed="true">Original</button>
+            <button type="button" data-audition="stem" aria-pressed="false" disabled>Stem</button>
+            <button type="button" data-audition="pattern" aria-pressed="false">Rebuilt</button>
+          </div>
+        </div>
+      </div>
+      <div class="waveform" id="waveform">
+        <canvas id="wave" aria-hidden="true"></canvas>
+        <div class="wave-selection" id="waveRange" aria-hidden="true"></div>
+        <div class="wave-cursor" id="waveCursor" aria-hidden="true"></div>
+        <input type="range" min="0" max="1000" value="0" step="1" id="seek" aria-label="Audio playhead">
+      </div>
+      <div class="wave-labels readout"><span>0:00</span><span id="trackDuration"></span></div>
+      <div class="transport">
+        <div class="transport-play">
+          <button class="keycap play" type="button" id="playButton" aria-label="Play selection"><span id="playIcon" aria-hidden="true">▶</span> <span id="playLabel">Play</span></button>
+          <button class="keycap subdued" type="button" id="loopButton" aria-pressed="false">Loop</button>
+          <output class="clock readout" id="transportTime" aria-label="Current audio time">0:00.000</output>
+        </div>
+        <div class="transport-grid">
+          <label class="compact-field" for="bpm"><span class="caption">BPM</span><input type="number" min="20" max="400" step="0.1" id="bpm" value="140"></label>
+          <div class="segments tiny" role="group" aria-label="Adjust tempo by octave"><button type="button" id="halfTempo" title="Halve the grid tempo">÷2</button><button type="button" id="doubleTempo" title="Double the grid tempo">×2</button></div>
+          <label class="compact-field anchor-field" for="anchor"><span class="caption">BAR 1</span><input type="number" min="0" step="0.001" value="0.120" id="anchor" aria-label="Bar 1 downbeat in seconds"><span class="unit">s</span></label>
+          <button class="keycap subdued" id="setAnchor" type="button" title="Set bar 1 at the audio playhead">Set at playhead</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel grid-panel" aria-labelledby="mapTitle">
+        <div class="panel-heading grid-heading">
+          <div><h2 id="mapTitle">Drum grid</h2><p class="muted" id="selectionLabel">Bars 1–4</p></div>
+          <div class="grid-actions">
+            <label class="field-label">Detection
+              <select id="analysisSource" aria-label="Detection input">
+                <option value="mix">Full mix</option>
+                <option value="stem" disabled>Drum stem</option>
+                <option value="combined" disabled>Combined</option>
+              </select>
+            </label>
+            <div class="range-controls" role="group" aria-label="Choose bar range">
+              <button class="keycap icon-button" type="button" id="previousBars" aria-label="Previous bars">‹</button>
+              <select id="barSpan" aria-label="Bars in view">
+                <option value="1">1 bar</option><option value="2">2 bars</option><option value="4" selected>4 bars</option><option value="8">8 bars</option>
+              </select>
+              <button class="keycap icon-button" type="button" id="nextBars" aria-label="Next bars">›</button>
+            </div>
+          </div>
+        </div>
+        <div class="map-scroll" role="region" aria-label="Drum hit timeline" tabindex="0">
+          <div class="map" id="map">
+            <div class="ruler-row"><span class="lane-heading caption">LANE</span><div class="ruler" id="ruler" aria-hidden="true"></div></div>
+            <div id="lanes"></div>
+            <div id="gridCursor" class="grid-cursor" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="grid-footer">
+          <div class="signal-status" id="statusLine" role="status"><span class="status-dot" aria-hidden="true"></span><span id="analysisStatus">Analyzing demo audio</span></div>
+          <button class="keycap subdued" id="undoButton" type="button" disabled>Undo edit</button>
+        </div>
+      </section>
+
+      <aside class="side-panels">
+        <section class="panel inspector" aria-labelledby="inspectorTitle">
+          <div class="panel-heading"><div><h2 id="inspectorTitle">Hit inspector</h2><p class="muted" id="hitLocation">Select a hit on the grid.</p></div></div>
+          <div class="inspector-body">
+            <label class="stack-field" for="editLane"><span class="caption">INSTRUMENT</span><select id="editLane"></select></label>
+            <div class="field-grid">
+              <label class="stack-field" for="editTime"><span class="caption">TIME (MS)</span><input id="editTime" type="number" step="0.1" min="0" disabled></label>
+              <label class="stack-field" for="editVelocity"><span class="caption">VELOCITY</span><input id="editVelocity" type="number" step="1" min="1" max="127" disabled></label>
+            </div>
+            <div class="offset-row"><span>From nearest step</span><output class="readout" id="hitOffset">—</output></div>
+            <div class="inspector-tools">
+              <button class="keycap" id="addHit" type="button" title="Add a hit on the chosen instrument at the playhead">Add hit at playhead</button>
+              <button class="keycap subdued" id="deleteHit" type="button" disabled>Delete</button>
+            </div>
+          </div>
+        </section>
+        <section class="panel changes" aria-labelledby="changesTitle">
+          <div class="panel-heading"><div><h2 id="changesTitle">Bar changes</h2><p class="muted">Compared with the first bar in view</p></div></div>
+          <ol id="barChanges"></ol>
+        </section>
+      </aside>
+    </div>
+    <footer><span>Audio processing runs on this device.</span><span>v0.1.0</span></footer>
+  </main>
+  <div class="drop-overlay" id="dropOverlay" hidden><strong>Drop audio to analyze</strong><span>WAV or MP3</span></div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script>%%SCRIPT%%</script>
+</body>
+</html>
